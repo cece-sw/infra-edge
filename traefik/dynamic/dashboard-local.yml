@@ -1,0 +1,9 @@
+http:
+  routers:
+    traefik-dashboard:
+      rule: Host(`traefik.localhost`)
+      entryPoints: [websecure]
+      tls: {} # just enable TLS; certs come from tls.yml or default cert
+      middlewares:
+        - basic-auth
+      service: api@internal

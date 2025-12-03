@@ -1,0 +1,86 @@
+name: edge-proxy
+
+services:
+  traefik:
+    image: traefik:v3.5
+    command:
+      # Providers
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.file.directory=/etc/traefik/dynamic"
+
+      # Entrypoints
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+
+      # Global HTTP→HTTPS redirect
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+
+      # ACME / Let's Encrypt (HTTP challenge)
+      - "--certificatesresolvers.le.acme.httpchallenge=true"
+      - "--certificatesresolvers.le.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.le.acme.email=admin@celestinrumo.ch"
+      - "--certificatesresolvers.le.acme.storage=/letsencrypt/acme.json"
+
+      # API + Dashboard
+      - "--api=true"
+      - "--api.dashboard=true"
+      - "--api.insecure=false"
+
+      # Logging / metrics
+      - "--log.level=INFO"
+      - "--accesslog=true"
+      - "--metrics.prometheus=true"
+
+    ports:
+      - "80:80"
+      - "443:443"
+
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./acme.json:/letsencrypt/acme.json
+      - ./dynamic:/etc/traefik/dynamic:ro
+
+    labels:
+      - "traefik.enable=true"
+
+      # Dashboard router (HTTPS + basic auth)
+      - "traefik.http.routers.traefik.rule=Host(`traefik.celestinrumo.ch`)"
+      - "traefik.http.routers.traefik.entrypoints=websecure"
+      - "traefik.http.routers.traefik.tls=true"
+      - "traefik.http.routers.traefik.tls.certresolver=le"
+      - "traefik.http.routers.traefik.service=api@internal"
+      - "traefik.http.routers.traefik.middlewares=basic-auth@file"
+
+    networks:
+      - traefik-proxy
+    restart: unless-stopped
+
+  elite-snow-experience:
+    build:
+      context: /home/celestin/Documents/dev/Projects-1/snowfall-portfolio
+      dockerfile: Dockerfile
+    container_name: elite-snow-experience
+    expose:
+      - "3000"
+    labels:
+      - "traefik.enable=true"
+
+      # All domains (.com + .ch)
+      - "traefik.http.routers.elite.rule=Host(`elite-snow-experience.com`)"
+      - "traefik.http.routers.elite.rule=Host(`www.elite-snow-experience.com`)"
+      - "traefik.http.routers.elite.rule=Host(`elite-snow-experience.ch`)"
+      - "traefik.http.routers.elite.rule=Host(`www.elite-snow-experience.ch`)"
+      - "traefik.http.routers.elite.entrypoints=websecure"
+      - "traefik.http.routers.elite.tls.certresolver=le"
+
+      # Internal port of the app
+      - "traefik.http.services.elite.loadbalancer.server.port=3000"
+    networks:
+      - traefik-proxy
+    restart: unless-stopped
+
+networks:
+  traefik-proxy:
+    name: traefik-proxy
