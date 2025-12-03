@@ -1,0 +1,40 @@
+services:
+  traefik:
+    command:
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --providers.file.directory=/etc/traefik/dynamic
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --entrypoints.web.http.redirections.entrypoint.to=websecure
+      - --entrypoints.web.http.redirections.entrypoint.scheme=https
+      - --api=true
+      - --api.dashboard=true
+      - --accesslog=true
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./certs:/certs:ro
+      - ./dynamic:/etc/traefik/dynamic:ro
+      - ./dynamic/tls.yml:/etc/traefik/dynamic/tls.yml:ro
+
+    labels:
+      # full router definition for the dashboard (HTTPS, local certs)
+      - "traefik.http.routers.traefik.rule=Host(`traefik.celestinrumo.ch`)"
+      - "traefik.http.routers.traefik.entrypoints=websecure"
+      - "traefik.http.routers.traefik.tls=true"
+      - "traefik.http.routers.traefik.service=api@internal"
+      - "traefik.http.routers.traefik.middlewares=basic-auth@file"
+
+  elite-snow-experience:
+    labels:
+      - "traefik.enable=true"
+      # Local domain
+      - "traefik.http.routers.elite-local.rule=Host(`elite-snow-experience.localhost`)"
+      - "traefik.http.routers.elite-local.entrypoints=websecure"
+      - "traefik.http.routers.elite-local.tls=true"
+      # Reuse same service
+      - "traefik.http.routers.elite-local.service=elite"
+      - "traefik.http.services.elite.loadbalancer.server.port=3000"

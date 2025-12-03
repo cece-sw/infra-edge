@@ -1,0 +1,10 @@
+http:
+  routers:
+    traefik-dashboard:
+      rule: Host(`traefik.celestinrumo.ch`)
+      entryPoints: [websecure]
+      tls:
+        certResolver: le
+      middlewares:
+        - basic-auth
+      service: api@internal
