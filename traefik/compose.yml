@@ -59,7 +59,7 @@ services:
 
   elite-snow-experience:
     build:
-      context: /home/celestin/Documents/dev/Projects-1/snowfall-portfolio
+      context: ../../snowfall-portfolio
       dockerfile: Dockerfile
     container_name: elite-snow-experience
     expose:
