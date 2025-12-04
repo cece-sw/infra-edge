@@ -1,0 +1,21 @@
+http:
+  middlewares:
+    basic-auth:
+      basicAuth:
+        users:
+          # Replace with your own generated pair:
+          # htpasswd -nb admin 'STRONG_PASSWORD'
+          - "admin:$apr1$Ro9v.z5L$E.lBDDtj/2VlLW6TqmlOO."
+
+    security-headers:
+      headers:
+        frameDeny: true
+        contentTypeNosniff: true
+        browserXssFilter: true
+        referrerPolicy: "no-referrer-when-downgrade"
+        permissionsPolicy: "camera=(), microphone=()"
+
+    noindex:
+      headers:
+        customResponseHeaders:
+          X-Robots-Tag: "noindex, nofollow, noarchive"
