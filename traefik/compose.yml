@@ -69,9 +69,6 @@ services:
 
       # All domains (.com + .ch)
       - 'traefik.http.routers.elite.rule=HostRegexp(`^(www\.)?elite-snow-experience\.(com|ch)$`)'
-      - "traefik.http.routers.elite.rule=Host(`www.elite-snow-experience.com`)"
-      - "traefik.http.routers.elite.rule=Host(`elite-snow-experience.ch`)"
-      - "traefik.http.routers.elite.rule=Host(`www.elite-snow-experience.ch`)"
       - "traefik.http.routers.elite.entrypoints=websecure"
       - "traefik.http.routers.elite.tls.certresolver=le"
       - "traefik.http.routers.elite.service=elite"
