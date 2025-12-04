@@ -68,7 +68,7 @@ services:
       - "traefik.enable=true"
 
       # All domains (.com + .ch)
-      - "traefik.http.routers.web.rule=Host(`www.elite-snow-experience.com`) || Host(`www.elite-snow-experience.ch`)"
+      - "traefik.http.routers.web.rule=Host(`elite-snow-experience.ch`)"
       - "traefik.http.routers.elite.entrypoints=websecure"
       - "traefik.http.routers.elite.tls.certresolver=le"
       - "traefik.http.routers.elite.service=elite"
