@@ -72,7 +72,12 @@ services:
       - "traefik.http.routers.elite.entrypoints=websecure"
       - "traefik.http.routers.elite.tls.certresolver=le"
       - "traefik.http.routers.elite.service=elite"
-      - "traefik.http.routers.elite.middlewares=elite-redirect-to-www"
+
+      # Router for non-www domains — redirect to www
+      - "traefik.http.routers.elite-non-www.rule=Host(`elite-snow-experience.ch`) || Host(`elite-snow-experience.com`)"
+      - "traefik.http.routers.elite-non-www.entrypoints=websecure"
+      - "traefik.http.routers.elite-non-www.tls.certresolver=le"
+      - "traefik.http.routers.elite-non-www.middlewares=elite-redirect-to-www"
 
       # Internal port of the app
       - "traefik.http.services.elite.loadbalancer.server.port=3000"
