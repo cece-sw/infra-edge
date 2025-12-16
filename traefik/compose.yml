@@ -58,9 +58,7 @@ services:
     restart: unless-stopped
 
   elite-snow-experience:
-    build:
-      context: ../../snowfall-portfolio
-      dockerfile: Dockerfile
+    image: ghcr.io/cece-sw/snowfall-portfolio:latest
     container_name: elite-snow-experience
     expose:
       - "3000"
