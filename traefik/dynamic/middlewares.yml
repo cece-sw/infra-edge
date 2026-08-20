@@ -3,9 +3,8 @@ http:
     basic-auth:
       basicAuth:
         users:
-          # Replace with your own generated pair:
-          # htpasswd -nb admin 'STRONG_PASSWORD'
-          - "admin:$apr1$Ro9v.z5L$E.lBDDtj/2VlLW6TqmlOO."
+          # Generated via: htpasswd -nbB admin 'STRONG_PASSWORD'
+          - "admin:$2y$05$7ObYZdiXe7IzQR.ZJF0VzeN/uxmvQAPTabmwvYQQfX2TQCGqmMv06"
 
     security-headers:
       headers:
