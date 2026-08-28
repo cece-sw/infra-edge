@@ -57,50 +57,6 @@ services:
       - traefik-proxy
     restart: unless-stopped
 
-  dreamandchase-frontend:
-    image: ghcr.io/celestin-rumo/dreamandchase-frontend:${IMAGE_TAG:-latest}
-    container_name: dreamandchase-frontend
-    expose:
-      - "3000"
-    labels:
-      - "traefik.enable=true"
-
-      - "traefik.http.routers.dreamandchase.rule=Host(`www.dream-and-chase.celestinrumo.ch`)"
-      - "traefik.http.routers.dreamandchase.entrypoints=websecure"
-      - "traefik.http.routers.dreamandchase.tls.certresolver=le"
-      - "traefik.http.routers.dreamandchase.service=dreamandchase"
-
-      - "traefik.http.routers.dreamandchase-non-www.rule=Host(`dream-and-chase.celestinrumo.ch`)"
-      - "traefik.http.routers.dreamandchase-non-www.entrypoints=websecure"
-      - "traefik.http.routers.dreamandchase-non-www.tls.certresolver=le"
-      - "traefik.http.routers.dreamandchase-non-www.middlewares=dreamandchase-redirect-to-www"
-
-      - "traefik.http.services.dreamandchase.loadbalancer.server.port=3000"
-
-      - "traefik.http.middlewares.dreamandchase-redirect-to-www.redirectregex.regex=^https?://dream-and-chase\\.celestinrumo\\.ch/(.*)"
-      - "traefik.http.middlewares.dreamandchase-redirect-to-www.redirectregex.replacement=https://www.dream-and-chase.celestinrumo.ch/$1"
-      - "traefik.http.middlewares.dreamandchase-redirect-to-www.redirectregex.permanent=true"
-
-    networks:
-      - traefik-proxy
-    restart: unless-stopped
-
-  dreamandchase-cms:
-    image: ghcr.io/celestin-rumo/dreamandchase-cms:${IMAGE_TAG:-latest}
-    container_name: dreamandchase-cms
-    expose:
-      - "3000"
-    environment:
-      PAYLOAD_SECRET: ${PAYLOAD_SECRET}
-      DATABASE_URI: ${DATABASE_URI}
-      PAYLOAD_PUBLIC_SERVER_URL: https://cms.dream-and-chase.celestinrumo.ch
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.dreamandchase-cms.rule=Host(`cms.dream-and-chase.celestinrumo.ch`)"
-      - "traefik.http.routers.dreamandchase-cms.entrypoints=websecure"
-      - "traefik.http.routers.dreamandchase-cms.tls.certresolver=le"
-      - "traefik.http.services.dreamandchase-cms.loadbalancer.server.port=3000"
-
   dev-portfolio-frontend:
     image: ghcr.io/celestin-rumo/dev-portfolio-frontend:latest
     container_name: dev-portfolio-frontend
